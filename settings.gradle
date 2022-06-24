@@ -1,0 +1,5 @@
+rootProject.name = 'tracer'
+
+include 'tracer-agent'
+include 'tracer-agent-core'
+
