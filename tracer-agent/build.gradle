@@ -17,14 +17,12 @@ repositories {
 dependencies {
     compileOnly project(':tracer-agent-core')
     runtimeOnly files('../tracer-agent-core/build/libs/tracer-agent-core.jarr')
-    compile group: 'net.bytebuddy', name: 'byte-buddy', version: '1.12.20'
+    implementation group: 'net.bytebuddy', name: 'byte-buddy', version: '1.12.20'
+    implementation group: 'org.slf4j', name: 'slf4j-api', version: slf4j_version
+    implementation group: 'org.slf4j', name: 'slf4j-simple', version: slf4j_version
 
     compileOnly group: 'org.projectlombok', name: 'lombok', version: lombok_version
     annotationProcessor group: 'org.projectlombok', name: 'lombok', version: lombok_version
-
-    testCompile project(':tracer-agent-core')
-    testCompile group: 'junit', name: 'junit', version: '4.11'
-    testCompile group: 'org.hamcrest', name: 'hamcrest', version: '2.2'
 }
 
 repositories {

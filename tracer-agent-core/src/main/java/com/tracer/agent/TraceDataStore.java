@@ -1,6 +1,6 @@
 package com.tracer.agent;
 
-public interface PerfDataStore {
+public interface TraceDataStore {
 
     void store(TraceRecord measurement);
 }

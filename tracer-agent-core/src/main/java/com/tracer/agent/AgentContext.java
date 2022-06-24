@@ -1,16 +1,18 @@
 package com.tracer.agent;
 
+import com.tracer.agent.stores.FileTraceDataStore;
+
 public class AgentContext {
 
     private static AgentContext instance;
     private static volatile boolean agentLoaded = false;
 
-    private final PerfDataStore perfDataStore;
+    private final TraceDataStore perfDataStore;
     private final MethodRepository methodRepository;
 
     private AgentContext(Settings settings) throws Exception {
         this.methodRepository = new MethodRepository();
-        this.perfDataStore = new FilePerfDataStore(settings, methodRepository);
+        this.perfDataStore = new FileTraceDataStore(settings, methodRepository);
     }
 
     public static AgentContext getInstance() {
@@ -30,7 +32,7 @@ public class AgentContext {
         agentLoaded = true;
     }
 
-    public PerfDataStore getPerfDataStore() {
+    public TraceDataStore getPerfDataStore() {
         return perfDataStore;
     }
 

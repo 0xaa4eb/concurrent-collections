@@ -11,20 +11,12 @@ import net.bytebuddy.description.method.ParameterDescription;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.implementation.bytecode.assign.Assigner;
 
-
-/**
- * Allows wiring method id into advice classes like {@link AvgCallTimeProfileAdvice} and others
- * <p>
- * Uses a singleton instance of {@link MethodRepository} to store methods into it.
- */
 public class MethodIdFactory implements Advice.OffsetMapping.Factory<MethodId> {
 
     private final ForMethodIdOffsetMapping instance;
 
     public MethodIdFactory(MethodRepository methodRepository, MethodMatcherList profileMethods) {
-        ByteBuddyMethodResolver byteBuddyMethodResolver = new ByteBuddyMethodResolver(
-                profileMethods.useSuperTypes() ? ByteBuddyTypeConverter.SUPER_TYPE_DERIVING_INSTANCE : ByteBuddyTypeConverter.INSTANCE
-        );
+        ByteBuddyMethodResolver byteBuddyMethodResolver = new ByteBuddyMethodResolver(ByteBuddyTypeConverter.SUPER_TYPE_DERIVING_INSTANCE);
         this.instance = new ForMethodIdOffsetMapping(byteBuddyMethodResolver, methodRepository);
     }
 

@@ -1,6 +1,6 @@
 package com.tracer.agent.util;
 
-import com.ulyp.core.Type;
+import com.tracer.agent.Type;
 
 public interface TypeMatcher {
 

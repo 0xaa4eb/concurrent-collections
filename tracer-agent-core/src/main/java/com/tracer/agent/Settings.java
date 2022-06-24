@@ -1,14 +1,11 @@
 package com.tracer.agent;
 
-import com.tracer.agent.util.CommaSeparatedList;
-import com.tracer.agent.util.MethodMatcherList;
-import com.tracer.agent.util.PackageList;
+import com.tracer.agent.util.*;
 import org.jetbrains.annotations.NotNull;
 
-/**
- * Agent settings which define what packages to instrument, at which method profiling should start, etc.
- * It's only possible to set settings via JMV system properties at the time.
- */
+import java.util.List;
+import java.util.stream.Collectors;
+
 public class Settings {
 
     public static final String EXCLUDE_PACKAGES_PROPERTY = "tracer.exclude-packages";
@@ -18,16 +15,18 @@ public class Settings {
 
     private final String file;
     @NotNull
-    private final MethodMatcherList methodMatcherList;
+    private final MethodMatcherList tracedMethods;
+    private final List<TypeMatcher> tracedTypeMatchers;
     private final PackageList excludedFromInstrumentationPackages;
     private final boolean agentDisabled;
 
     public Settings(
             String file,
-            @NotNull MethodMatcherList methodMatcherList,
+            @NotNull MethodMatcherList tracedMethods,
             PackageList excludedFromInstrumentationPackages,
             boolean agentDisabled) {
-        this.methodMatcherList = methodMatcherList;
+        this.tracedMethods = tracedMethods;
+        this.tracedTypeMatchers = tracedMethods.getMethods().stream().map(MethodMatcher::getTypeMatcher).collect(Collectors.toList());
         this.file = file;
         this.excludedFromInstrumentationPackages = excludedFromInstrumentationPackages;
         this.agentDisabled = agentDisabled;
@@ -45,8 +44,12 @@ public class Settings {
     }
 
     @NotNull
-    public MethodMatcherList getProfileMethodList() {
-        return methodMatcherList;
+    public MethodMatcherList getTracedMethods() {
+        return tracedMethods;
+    }
+
+    public List<TypeMatcher> getTracedTypeMatchers() {
+        return tracedTypeMatchers;
     }
 
     public String getFile() {

@@ -7,9 +7,9 @@ import net.bytebuddy.dynamic.DynamicType;
 import net.bytebuddy.utility.JavaModule;
 
 @Slf4j
-public class ErrorLoggingInstrumentationListener implements AgentBuilder.Listener {
+public class InstrumentationListener implements AgentBuilder.Listener {
 
-    public ErrorLoggingInstrumentationListener() {
+    public InstrumentationListener() {
 
     }
 

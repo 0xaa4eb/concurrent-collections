@@ -12,7 +12,6 @@ import java.util.concurrent.atomic.AtomicLong;
 @Slf4j
 public class ByteBuddyTypeConverter {
 
-    public static final ByteBuddyTypeConverter INSTANCE = new ByteBuddyTypeConverter(false);
     public static final ByteBuddyTypeConverter SUPER_TYPE_DERIVING_INSTANCE = new ByteBuddyTypeConverter(true);
 
     private static final AtomicLong typeIdGenerator = new AtomicLong(0L);

@@ -7,56 +7,22 @@ import java.util.List;
 
 public class StreamDrainer {
 
-    /**
-     * The default size of the buffer for draining a stream.
-     */
     public static final int DEFAULT_BUFFER_SIZE = 8 * 1024;
-
-    /**
-     * A default instance using the {@link StreamDrainer#DEFAULT_BUFFER_SIZE}.
-     */
-    public static final StreamDrainer DEFAULT = new StreamDrainer();
-
-    /**
-     * A convenience constant referring to the value representing the end of a stream.
-     */
     private static final int END_OF_STREAM = -1;
-
-    /**
-     * A convenience constant referring to the value representing the start of a stream.
-     */
     private static final int FROM_BEGINNING = 0;
 
-    /**
-     * The buffer size for reading from a given stream.
-     */
     private final int bufferSize;
 
-    /**
-     * Creates a stream drainer with the default buffer size.
-     */
     public StreamDrainer() {
         this(DEFAULT_BUFFER_SIZE);
     }
 
-    /**
-     * Creates a stream drainer with the given buffer size.
-     *
-     * @param bufferSize The buffer size for reading from a given stream.
-     */
     public StreamDrainer(int bufferSize) {
         this.bufferSize = bufferSize;
     }
 
-    /**
-     * Drains an input stream into a byte array. The given input stream is not closed.
-     *
-     * @param inputStream The input stream to drain.
-     * @return A byte array containing the content of the input stream.
-     * @throws IOException If the stream reading causes an error.
-     */
     public byte[] drain(InputStream inputStream) throws IOException {
-        List<byte[]> previousBytes = new ArrayList<byte[]>();
+        List<byte[]> previousBytes = new ArrayList<>();
         byte[] currentArray = new byte[bufferSize];
         int currentIndex = 0;
         int currentRead;

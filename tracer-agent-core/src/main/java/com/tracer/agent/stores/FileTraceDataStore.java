@@ -2,10 +2,8 @@ package com.tracer.agent.stores;
 
 import com.tracer.agent.*;
 import com.tracer.agent.tracers.AvgCallTimeTracer;
-import com.tracer.agent.util.Duration;
 import com.tracer.agent.util.LoggingSettings;
 import com.tracer.agent.util.NamedThreadFactory;
-import org.HdrHistogram.Histogram;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -22,7 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.jctools.queues.MpscUnboundedArrayQueue;
 
 @Slf4j
-public class FilePerfDataStore implements PerfDataStore {
+public class FileTraceDataStore implements TraceDataStore {
 
     private static final int QUEUES_COUNT = 16;
     private static final int QUEUES_IDX_MASK = QUEUES_COUNT - 1;
@@ -33,7 +31,7 @@ public class FilePerfDataStore implements PerfDataStore {
     private final ScheduledExecutorService scheduledExecutorService;
     private final MethodRepository methodRepository;
 
-    public FilePerfDataStore(Settings settings, MethodRepository methodRepository) throws IOException {
+    public FileTraceDataStore(Settings settings, MethodRepository methodRepository) throws IOException {
         this.methodRepository = methodRepository;
 
         for (int i = 0; i < QUEUES_COUNT; i++) {
@@ -69,32 +67,32 @@ public class FilePerfDataStore implements PerfDataStore {
         @Override
         public void run() {
             try {
-                for (int qIdx = 0; qIdx < QUEUES_COUNT; qIdx++) {
-                    flushQueue(qIdx);
-                }
-
-                for (Map.Entry<Integer, AvgCallTimeTracer> entry : tracers.entrySet()) {
-                    if (!entry.getValue().hasSomething()) {
-                        continue;
-                    }
-                    Method method = methodRepository.get(entry.getKey());
-                    Histogram histogram = entry.getValue().resetAndGetState();
-
-                    writer.write(
-                            LocalDateTime.now() +
-                                    " method: " + method.toShortString() +
-                                    ", count: " + histogram.getTotalCount() +
-                                    ", median: " + new Duration(histogram.getValueAtPercentile(50.0)) +
-                                    ", p90: " + new Duration(histogram.getValueAtPercentile(90.0)) +
-                                    ", p99: " + new Duration(histogram.getValueAtPercentile(99.0)) +
-                                    ", max: " + new Duration(histogram.getMaxValue()));
-                    writer.newLine();
-
-                }
-                writer.flush();
+                flushQueues();
+                writeTracerReports();
             } catch (IOException e) {
                 log.error("Failed to write profile data", e);
                 throw new RuntimeException(e);
+            }
+        }
+
+        private void writeTracerReports() throws IOException {
+            for (Map.Entry<Integer, AvgCallTimeTracer> entry : tracers.entrySet()) {
+                if (!entry.getValue().hasSomething()) {
+                    continue;
+                }
+                Integer methodId = entry.getKey();
+                Method method = methodRepository.get(methodId);
+                AvgCallTimeTracer tracer = entry.getValue();
+                writer.write(LocalDateTime.now() + " method: " + method.toShortString() + tracer.report());
+                writer.newLine();
+                tracer.reset();
+                writer.flush();
+            }
+        }
+
+        private void flushQueues() {
+            for (int qIdx = 0; qIdx < QUEUES_COUNT; qIdx++) {
+                flushQueue(qIdx);
             }
         }
 
